@@ -3,6 +3,7 @@
 #![feature(custom_test_frameworks)]
 #![test_runner(min_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
+#![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
 use min_os::println;
@@ -13,6 +14,10 @@ pub extern "C" fn _start() -> ! {
 
     #[cfg(test)]
     test_main();
+
+    min_os::init();
+    x86_64::instructions::interrupts::int3();
+    println!("It did not crash!");
 
     loop {}
 }
