@@ -6,6 +6,7 @@
 #![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
+use min_os::hlt_loop;
 use min_os::println;
 
 #[unsafe(no_mangle)]
@@ -17,9 +18,13 @@ pub extern "C" fn _start() -> ! {
 
     min_os::init();
     x86_64::instructions::interrupts::int3();
+    // stack_overflow();
     println!("It did not crash!");
+    hlt_loop();
+}
 
-    loop {}
+fn stack_overflow() {
+    stack_overflow(); // for each recursion, the return address is pushed
 }
 
 /// This function is called on panic.
@@ -27,7 +32,7 @@ pub extern "C" fn _start() -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    hlt_loop();
 }
 
 #[cfg(test)]
